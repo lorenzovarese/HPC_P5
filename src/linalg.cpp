@@ -1,4 +1,4 @@
-// TODO : update reduction operations
+// update reduction operations
 
 // linear algebra subroutines
 // Ben Cumming @ CSCS

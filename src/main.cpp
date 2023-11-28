@@ -1,5 +1,5 @@
-// TODO : initialize MPI and get rank & size
-// TODO : MPI finalize
+// initialize MPI and get rank & size
+// MPI finalize
 
 // ******************************************
 // implicit time stepping implementation of 2D diffusion problem
