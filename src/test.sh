@@ -1,27 +1,27 @@
 #!/bin/bash
 
-export LLVM_DIR=$(brew --prefix llvm)
-export PATH="$LLVM_DIR/bin:$PATH"
-export LDFLAGS="-L$LLVM_DIR/lib"
-export CPPFLAGS="-I$LLVM_DIR/include"
-export CXX="/opt/homebrew/bin/mpicxx"
-
+# Define the sizes, threads, and ranks arrays
 sizes=(128 256 512 1024)
 threads=(1 2 3 4 5 6 7 8 9 10)
 ranks=(1 2 4)
 
-for i in {0..3}
-do
-    for k in {0..2}
-    do
-        for j in {0..9}
-        do  
-            export OMP_NUM_THREADS=${threads[$j]}
-            echo ranks ${ranks[$k]}, core:PE=${threads[$j]} size ${sizes[$i]}
-            mpirun -np ${ranks[$k]} --map-by core:PE=${threads[$j]} ./main ${sizes[$i]} ${sizes[$i]} 100 0.01
+# Output CSV file name
+output_file="performance_results.csv"
+
+# Create or clear the output file at the start
+echo "Size,Rank,Thread,Execution Time" > "$output_file"
+
+# Iterate over each size, rank, and thread combination
+for size in "${sizes[@]}"; do
+    for rank in "${ranks[@]}"; do
+        for thread in "${threads[@]}"; do
+            export OMP_NUM_THREADS=$thread
+            echo "Running with ranks=${rank}, threads=${thread}, size=${size}"
+
+            # Run the program and append the results to the CSV file
+            mpirun -np $rank ./main $size $size 100 0.01 | awk -F';' 'BEGIN{OFS=","} {print $1, $2, $3, $4}' >> "$output_file"
         done
-        sleep 3
-        python3 plotting.py
-        mv output.png ./plots/out_size"${sizes[$i]}"_rank"${ranks[$k]}".png
     done
 done
+
+echo "Script execution completed. Results saved in $output_file."
