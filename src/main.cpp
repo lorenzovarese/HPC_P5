@@ -143,8 +143,8 @@ int main(int argc, char *argv[])
     readcmdline(options, argc, argv);
 
     // initialize MPI
-    MPI_Init(&argc, &argv);
     int thread_level;
+    MPI_Init_thread(&argc, &argv, MPI_THREAD_FUNNELED, &thread_level);
 
     // get rank and the number of ranks
     int mpi_rank, mpi_size;
@@ -330,6 +330,7 @@ int main(int argc, char *argv[])
         std::cout << "Goodbye!" << std::endl;
 
     // Finalize MPI
+    MPI_Comm_free(&domain.comm_cart);
     MPI_Finalize();
 
     return 0;
