@@ -58,6 +58,7 @@ namespace linalg
     double ss_dot(Field const &x, Field const &y)
     {
         double result = 0;
+        double result_reduction = 0;
         int N = y.length();
 
 #pragma omp parallel for reduction(+ : result)
@@ -65,11 +66,10 @@ namespace linalg
             result += x[i] * y[i];
 
         // reduce the result across all processes
-        double result_reduction = 0;
         // Note: the result is needed at all ranks
         // use data::domain.comm_cart
         MPI_Allreduce(&result, &result_reduction, 1, MPI_DOUBLE, MPI_SUM, data::domain.comm_cart);
-        return result;
+        return result_reduction;
     }
 
     // computes the 2-norm of x
@@ -77,6 +77,7 @@ namespace linalg
     double ss_norm2(Field const &x)
     {
         double result = 0;
+        double result_reduction = 0;
         int N = x.length();
 
 #pragma omp parallel for reduction(+ : result)
@@ -84,11 +85,10 @@ namespace linalg
             result += x[i] * x[i];
 
         // reduce the result across all processes
-        double result_reduction = 0;
         // Note: the result is needed at all ranks
         // use data::domain.comm_cart
         MPI_Allreduce(&result, &result_reduction, 1, MPI_DOUBLE, MPI_SUM, data::domain.comm_cart);
-        return sqrt(result);
+        return sqrt(result_reduction);
     }
 
     // sets entries in a vector to value
