@@ -1,5 +1,7 @@
+export OMPI_CXX=g++-13
+
 CXX=mpicxx
-CXXFLAGS=-O3 -fopenmp  -fpermissive
+CXXFLAGS=-O3 -fopenmp  -fpermissive -ld_classic
 
 ifeq ($(PE_ENV),GNU)
     # the gnu compiler requires that we specifically enable OpenMP
